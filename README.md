@@ -15,6 +15,18 @@
   </li>
   <li>Recepcionista
     <ul>
+      <li>Cada camareira deve ser representado por uma thread;</li>  
+      <li>No mínimo, devem existir 10 camareiras;</li>
+    </ul> 
+  </li>
+    <li>Camareira
+    <ul>
+      <li>Cada recepcionista deve ser representado por uma thread;</li>  
+      <li>No mínimo, devem existir 5 recepcionistas;</li>
+    </ul> 
+  </li>
+    <li>
+    <ul>
       <li>Cada recepcionista deve ser representado por uma thread;</li>  
       <li>No mínimo, devem existir 5 recepcionistas;</li>
     </ul> 
