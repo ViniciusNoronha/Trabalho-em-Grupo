@@ -48,7 +48,8 @@ public class Hospede extends Thread {
 
     public void sairParaPassear() {
         hotel.getRecepcionista().receberChave(this.quarto);
-        System.out.println("Hóspede " + id + " deixou a chave do quarto " + quarto.getNumero() + " na recepção.");
+        hotel.registrarQuartoParaLimpeza(this.quarto); // Marca o quarto para limpeza
+        System.out.println("Hóspede " + id + " deixou a chave do quarto " + quarto.getNumero() + " na recepção e foi passear.");
     }
 
     public void setQuarto(Quarto quarto) {
