@@ -7,12 +7,11 @@ public class Camareira extends Thread {
         this.hotel = hotel;
     }
 
-    @Override
     public void run() {
         try {
             while (true) {
                 Quarto quarto = hotel.obterQuartoParaLimpeza();
-                if (quarto != null) {
+                if (quarto != null && quarto.estaEmLimpeza() && !quarto.estaOcupado()) {
                     System.out.println("Camareira " + id + " limpando quarto " + quarto.getNumero());
                     Thread.sleep((long) (Math.random() * 3000));  // Simula o tempo de limpeza
                     hotel.finalizarLimpeza(quarto);
