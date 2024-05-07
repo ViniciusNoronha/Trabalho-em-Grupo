@@ -11,12 +11,12 @@ public class Camareira extends Thread {
         try {
             while (true) {
                 Quarto quarto = hotel.obterQuartoParaLimpeza();
-                if (quarto != null && quarto.estaEmLimpeza() && !quarto.estaOcupado()) {
+                if (quarto != null && quarto.estaEmLimpeza() && !quarto.estaOcupado() && quarto.temChaveNaRecepcao()) {
                     System.out.println("Camareira " + id + " limpando quarto " + quarto.getNumero());
-                    Thread.sleep((long) (Math.random() * 3000));  // Simula o tempo de limpeza
+                    Thread.sleep((long) (Math.random() * 3000));
                     hotel.finalizarLimpeza(quarto);
                 }
-                Thread.sleep(1000);  // Espera antes de verificar novamente
+                Thread.sleep(1000);
             }
         } catch (InterruptedException e) {
             e.printStackTrace();
