@@ -5,7 +5,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.locks.Condition;
 
-// Define a classe Hotel que gerencia as operações do hotel, como alocação de quartos e atendimento de hóspedes.
+
 public class Hotel {
     private Quarto[] quartos;  // Array para armazenar os quartos do hotel.
     private ExecutorService poolHospedes;  // Pool de threads para gerenciar hóspedes.
