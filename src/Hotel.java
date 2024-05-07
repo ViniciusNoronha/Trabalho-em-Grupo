@@ -35,10 +35,7 @@ public class Hotel {
         }
     }
 
-    public Recepcionista getRecepcionista() {
-        // Retorna um recepcionista aleatório
-        return recepcionistas[rand.nextInt(recepcionistas.length)];
-    }
+    
     
 
     public boolean alocarQuarto(Hospede hospede) {
@@ -46,15 +43,13 @@ public class Hotel {
         try {
             while (true) {
                 for (Quarto quarto : quartos) {
-                    if (!quarto.estaOcupado() && !quarto.estaEmLimpeza()) {
+                    if (!quarto.estaOcupado() && !quarto.estaEmLimpeza() && !quarto.temChaveNaRecepcao()) {
                         quarto.setOcupado(true);
                         hospede.setQuarto(quarto);
                         return true;
                     }
                 }
-                if (!quartoLiberado.await(5000, TimeUnit.MILLISECONDS)) {  // Espera por até 5 segundos
-                    return false;  // Retorna falso se nenhum quarto ficar disponível em 5 segundos
-                }
+                quartoLiberado.await();
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
@@ -64,7 +59,10 @@ public class Hotel {
         }
     }
 
-    
+    public Recepcionista getRecepcionista() {
+        // Retorna um recepcionista aleatório
+        return recepcionistas[rand.nextInt(recepcionistas.length)];
+    }
 
     public synchronized void liberarQuarto(Quarto quarto) {
         lock.lock();
@@ -105,7 +103,6 @@ public class Hotel {
             lock.unlock();
         }
     }
-
     public synchronized void finalizarLimpeza(Quarto quarto) {
         lock.lock();
         try {
@@ -123,7 +120,7 @@ public class Hotel {
         lock.lock();
         try {
             // Simula que o recepcionista verifica se há solicitações pendentes
-            if (rand.nextInt(10) < 2) {  // Apenas 20% de chance de haver uma solicitação cada vez que é verificado
+            if (rand.nextInt(10) < 1) {  // Apenas 10% de chance de haver uma solicitação cada vez que é verificado
                 System.out.println("Recepcionista está disponível para atender solicitações.");
                 // Simula atendimento a uma solicitação.
                 try {
@@ -161,4 +158,7 @@ public class Hotel {
     
         System.out.println("Hotel está agora aberto e operando com todos os serviços.");
     }
+
+
+
 }
