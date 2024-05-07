@@ -9,14 +9,14 @@ public class Hotel {
     private Quarto[] quartos;
     private ExecutorService poolHospedes;
     private ExecutorService poolFuncionarios;
-    private Recepcionista[] recepcionistas; // Adiciona um array para recepcionistas
+    private Recepcionista[] recepcionistas; 
     private Random rand = new Random();
     private ReentrantLock lock = new ReentrantLock();
     private Condition quartoLiberado = lock.newCondition();
 
     public Hotel(int numQuartos, int numHospedes, int numCamareiras, int numRecepcionistas) {
         this.quartos = new Quarto[numQuartos];
-        recepcionistas = new Recepcionista[numRecepcionistas]; // Inicializa o array
+        recepcionistas = new Recepcionista[numRecepcionistas]; 
         for (int i = 0; i < numQuartos; i++) {
             quartos[i] = new Quarto(i + 1);
         }
@@ -70,7 +70,7 @@ public class Hotel {
         lock.lock();
         try {
             quarto.setOcupado(false);
-            quarto.setEmLimpeza(false); // Assumindo que a limpeza foi concluída
+            quarto.setEmLimpeza(false); 
             quartoLiberado.signalAll(); // Notifica todos os hóspedes que um quarto está disponível
         } finally {
             lock.unlock();
@@ -81,8 +81,8 @@ public class Hotel {
         lock.lock();
         try {
             for (Quarto quarto : quartos) {
-                if (!quarto.estaOcupado() && !quarto.estaEmLimpeza()) { // Garanta que o quarto não esteja em limpeza
-                    quarto.setEmLimpeza(true); // Marque o quarto como em limpeza
+                if (!quarto.estaOcupado() && !quarto.estaEmLimpeza()) { 
+                    quarto.setEmLimpeza(true); 
                     return quarto;
                 }
             }
@@ -139,7 +139,7 @@ public class Hotel {
     }
 
     public void shutdown() {
-        // Encerra os pools de executores de hóspedes e funcionários
+        
         poolHospedes.shutdown();
         poolFuncionarios.shutdown();
         try {
@@ -158,8 +158,7 @@ public class Hotel {
     
     
     public void start() {
-        // Todos os serviços já foram inicializados no construtor, então este método pode ser usado
-        // para iniciar quaisquer outras preparações necessárias ou simplesmente para sinalizar o início das operações.
+    
         System.out.println("Hotel está agora aberto e operando com todos os serviços.");
     }
 }
