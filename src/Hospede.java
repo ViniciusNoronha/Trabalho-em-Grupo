@@ -1,5 +1,3 @@
-import java.util.Random;
-
 public class Hospede extends Thread {
     private int id;
     private Hotel hotel;
@@ -16,28 +14,13 @@ public class Hospede extends Thread {
         while (tentativas < 2) {
             if (hotel.alocarQuarto(this)) {
                 System.out.println("Hóspede " + id + " alocado no quarto " + quarto.getNumero());
-                
-                Random rand = new Random();
-                if (rand.nextInt(2) == 0) {  // 50% chance de sair para passear
-                    sairParaPassear();
-                }
-
-                // Simula a estadia do hóspede
-                try {
-                    Thread.sleep((long) (Math.random() * 5000));
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                }
-                hotel.liberarQuarto(this.quarto);
+                realizarEstadia();
                 break;
             } else {
                 tentativas++;
                 System.out.println("Hóspede " + id + " não conseguiu quarto na tentativa " + tentativas);
-                try {
-                    Thread.sleep(1000); // Simula o passeio pela cidade
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    return;
+                if (tentativas < 2) {
+                    sairParaPassearTemporariamente();
                 }
             }
         }
@@ -46,10 +29,22 @@ public class Hospede extends Thread {
         }
     }
 
-    public void sairParaPassear() {
-        hotel.getRecepcionista().receberChave(this.quarto);
-        hotel.registrarQuartoParaLimpeza(this.quarto); // Marca o quarto para limpeza
-        System.out.println("Hóspede " + id + " deixou a chave do quarto " + quarto.getNumero() + " na recepção e foi passear.");
+    private void realizarEstadia() {
+        try {
+            Thread.sleep((long) (Math.random() * 5000)); // Simula a estadia do hóspede
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+        hotel.liberarQuarto(this.quarto);
+    }
+
+    private void sairParaPassearTemporariamente() {
+        try {
+            System.out.println("Hóspede " + id + " vai passear pela cidade enquanto espera por um quarto.");
+            Thread.sleep(10000); // Simula o passeio pela cidade
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
     }
 
     public void setQuarto(Quarto quarto) {
