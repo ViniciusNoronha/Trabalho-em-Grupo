@@ -1,6 +1,6 @@
 import java.util.Random;
 
-// Define a classe Hóspede que herda de Thread, permitindo que instâncias desta classe sejam executadas como threads separadas.
+
 public class Hospede extends Thread {
     private int id;  // Identificador único para o hóspede.
     private Hotel hotel;  // Referência ao hotel onde o hóspede está hospedado.
