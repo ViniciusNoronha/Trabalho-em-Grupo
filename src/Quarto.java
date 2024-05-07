@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 import java.util.List;
 
-// Define a classe Quarto que gerencia os detalhes e o estado de um quarto no hotel.
+
 public class Quarto {
     private int numero;  // Número identificador do quarto.
     private boolean ocupado;  // Flag para indicar se o quarto está ocupado.
