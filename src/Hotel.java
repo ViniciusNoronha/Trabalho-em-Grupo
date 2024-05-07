@@ -1,3 +1,4 @@
+import java.util.Random;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -11,11 +12,14 @@ public class Hotel {
     private Quarto[] quartos;
     private ExecutorService poolHospedes;
     private ExecutorService poolFuncionarios;
+    private Recepcionista[] recepcionistas; // Adiciona um array para recepcionistas
+    private Random rand = new Random();
     private ReentrantLock lock = new ReentrantLock();
     private Condition quartoLiberado = lock.newCondition();
 
     public Hotel(int numQuartos, int numHospedes, int numCamareiras, int numRecepcionistas) {
         this.quartos = new Quarto[numQuartos];
+        recepcionistas = new Recepcionista[numRecepcionistas]; // Inicializa o array
         for (int i = 0; i < numQuartos; i++) {
             quartos[i] = new Quarto(i + 1);
         }
@@ -29,9 +33,16 @@ public class Hotel {
             poolFuncionarios.execute(new Camareira(i, this));
         }
         for (int i = 0; i < numRecepcionistas; i++) {
-            poolFuncionarios.execute(new Recepcionista(i, this));
+            recepcionistas[i] = new Recepcionista(i, this);
+            poolFuncionarios.execute(recepcionistas[i]);
         }
     }
+
+    public Recepcionista getRecepcionista() {
+        // Retorna um recepcionista aleatório
+        return recepcionistas[rand.nextInt(recepcionistas.length)];
+    }
+    
 
     public boolean alocarQuarto(Hospede hospede) {
         lock.lock();
