@@ -51,11 +51,13 @@ public class Hotel {
                 for (Quarto quarto : quartos) {
                     if (!quarto.estaOcupado() && !quarto.estaEmLimpeza()) {
                         quarto.setOcupado(true);
-                        hospede.setQuarto(quarto); // Aloca o quarto ao hóspede
+                        hospede.setQuarto(quarto);
                         return true;
                     }
                 }
-                quartoLiberado.await(); // Espera até que um quarto seja liberado
+                if (!quartoLiberado.await(5000, TimeUnit.MILLISECONDS)) {  // Espera por até 5 segundos
+                    return false;  // Retorna falso se nenhum quarto ficar disponível em 5 segundos
+                }
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
@@ -64,6 +66,8 @@ public class Hotel {
             lock.unlock();
         }
     }
+
+    
 
     public synchronized void liberarQuarto(Quarto quarto) {
         lock.lock();
@@ -96,8 +100,10 @@ public class Hotel {
     public synchronized void registrarQuartoParaLimpeza(Quarto quarto) {
         lock.lock();
         try {
-            quarto.setEmLimpeza(true);
-            quartoLiberado.signalAll(); // Notifica camareiras que um quarto está pronto para limpeza
+            if (!quarto.estaOcupado() && quarto.temChaveNaRecepcao()) {
+                quarto.setEmLimpeza(true);
+                quartoLiberado.signalAll();
+            }
         } finally {
             lock.unlock();
         }
@@ -117,18 +123,19 @@ public class Hotel {
    
 
     public void atenderSolicitacoes() {
-        // Implementar a lógica de atendimento a hóspedes por parte dos recepcionistas.
-        // Esta é uma função de placeholder, mostrando um exemplo simples.
         lock.lock();
         try {
-            System.out.println("Recepcionista está disponível para atender solicitações.");
-            // Simula atendimento a uma solicitação.
-            try {
-                Thread.sleep(500); // Simula o tempo de atendimento
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
+            // Simula que o recepcionista verifica se há solicitações pendentes
+            if (rand.nextInt(10) < 2) {  // Apenas 20% de chance de haver uma solicitação cada vez que é verificado
+                System.out.println("Recepcionista está disponível para atender solicitações.");
+                // Simula atendimento a uma solicitação.
+                try {
+                    Thread.sleep(500); // Simula o tempo de atendimento
+                    System.out.println("Recepcionista finalizou uma solicitação.");
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
             }
-            System.out.println("Recepcionista finalizou uma solicitação.");
         } finally {
             lock.unlock();
         }
