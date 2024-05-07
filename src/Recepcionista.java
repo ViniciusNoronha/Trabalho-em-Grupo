@@ -26,7 +26,6 @@ public class Recepcionista extends Thread {
     public void run() {
         try {
             while (true) {
-                // Lógica existente
                 hotel.atenderSolicitacoes();
                 Thread.sleep(500);  // Simula o tempo entre atendimentos
             }
