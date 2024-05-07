@@ -91,19 +91,30 @@ public class Hotel {
         }
     }
 
-    public void finalizarLimpeza(Quarto quarto) {
+    
+    
+    public synchronized void registrarQuartoParaLimpeza(Quarto quarto) {
         lock.lock();
         try {
-            // Aqui poderíamos implementar uma lógica para marcar o quarto como limpo.
-            // No entanto, dependendo da implementação da classe Quarto, isso pode já ser manipulado por quarto.liberarQuarto().
-            // Assumindo que o quarto precisa ser explicitamente marcado como limpo:
-            if (!quarto.estaOcupado()) {
-                System.out.println("Quarto " + quarto.getNumero() + " foi limpo e está pronto para ser ocupado novamente.");
-            }
+            quarto.setEmLimpeza(true);
+            quartoLiberado.signalAll(); // Notifica camareiras que um quarto está pronto para limpeza
         } finally {
             lock.unlock();
         }
     }
+
+    public synchronized void finalizarLimpeza(Quarto quarto) {
+        lock.lock();
+        try {
+            quarto.setEmLimpeza(false);
+            quartoLiberado.signalAll(); // Notifica que o quarto está limpo e pronto para ser ocupado novamente
+            System.out.println("Quarto " + quarto.getNumero() + " foi limpo e está pronto para ser ocupado novamente.");
+        } finally {
+            lock.unlock();
+        }
+    }
+    
+   
 
     public void atenderSolicitacoes() {
         // Implementar a lógica de atendimento a hóspedes por parte dos recepcionistas.
