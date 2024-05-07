@@ -1,12 +1,12 @@
 public class Main {
     public static void main(String[] args) {
-        // Aumentando o número mínimo de recepcionistas para 5, se necessário.
+        
         int numeroDeQuartos = 10;
         int numeroDeHospedes = 50;
         int numeroDeCamareiras = 10;
-        int numeroDeRecepcionistas = Math.max(5, 5); // Garante que pelo menos 5 recepcionistas sejam criados.
+        int numeroDeRecepcionistas = Math.max(5, 5); 
 
-        // Criação do objeto hotel com os parâmetros especificados.
+        
         Hotel hotel = new Hotel(numeroDeQuartos, numeroDeHospedes, numeroDeCamareiras, numeroDeRecepcionistas);
 
         // Inicia todas as threads do hotel: hóspedes, camareiras, e recepcionistas.
