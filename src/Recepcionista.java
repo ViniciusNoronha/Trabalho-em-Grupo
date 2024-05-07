@@ -1,6 +1,6 @@
 import java.util.HashSet;
 
-// Define a classe Recepcionista que herda de Thread, permitindo que instâncias desta classe sejam executadas como threads separadas.
+
 public class Recepcionista extends Thread {
     private int id;  // Identificador único para o recepcionista.
     private Hotel hotel;  // Referência ao hotel onde o recepcionista trabalha.
