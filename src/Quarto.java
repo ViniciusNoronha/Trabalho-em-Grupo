@@ -5,12 +5,14 @@ public class Quarto {
     private int numero;
     private boolean ocupado;
     private boolean emLimpeza;
+    private boolean chaveNaRecepcao; // Atributo para verificar se a chave está na recepção.
     private List<Hospede> hospedes;
 
     public Quarto(int numero) {
         this.numero = numero;
         this.ocupado = false;
         this.emLimpeza = false;
+        this.chaveNaRecepcao = false; // Inicialmente, a chave não está na recepção.
         this.hospedes = new ArrayList<>();
     }
 
@@ -26,8 +28,9 @@ public class Quarto {
     public synchronized void liberarQuarto() {
         hospedes.clear();
         ocupado = false;
-        emLimpeza = false; // Assumindo que a limpeza será concluída imediatamente após a liberação
-        notifyAll();  // Notifica todos que o quarto está livre
+        emLimpeza = false;
+        chaveNaRecepcao = false; // Resetar a chave para não estar na recepção quando o quarto é liberado.
+        notifyAll();
     }
 
     public synchronized boolean estaOcupado() {
@@ -48,5 +51,13 @@ public class Quarto {
 
     public int getNumero() {
         return numero;
+    }
+
+    public synchronized boolean temChaveNaRecepcao() {
+        return chaveNaRecepcao;
+    }
+
+    public synchronized void setChaveNaRecepcao(boolean chaveNaRecepcao) {
+        this.chaveNaRecepcao = chaveNaRecepcao;
     }
 }
