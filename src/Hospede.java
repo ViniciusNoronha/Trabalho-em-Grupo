@@ -1,3 +1,5 @@
+import java.util.Random;
+
 public class Hospede extends Thread {
     private int id;
     private Hotel hotel;
@@ -14,6 +16,12 @@ public class Hospede extends Thread {
         while (tentativas < 2) {
             if (hotel.alocarQuarto(this)) {
                 System.out.println("Hóspede " + id + " alocado no quarto " + quarto.getNumero());
+                
+                Random rand = new Random();
+                if (rand.nextInt(2) == 0) {  // 50% chance de sair para passear
+                    sairParaPassear();
+                }
+
                 // Simula a estadia do hóspede
                 try {
                     Thread.sleep((long) (Math.random() * 5000));
@@ -36,6 +44,11 @@ public class Hospede extends Thread {
         if (tentativas >= 2) {
             System.out.println("Hóspede " + id + " deixou uma reclamação e foi embora.");
         }
+    }
+
+    public void sairParaPassear() {
+        hotel.getRecepcionista().receberChave(this.quarto);
+        System.out.println("Hóspede " + id + " deixou a chave do quarto " + quarto.getNumero() + " na recepção.");
     }
 
     public void setQuarto(Quarto quarto) {
