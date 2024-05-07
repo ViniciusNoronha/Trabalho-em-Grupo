@@ -1,4 +1,4 @@
-// Define a classe Camareira que herda de Thread, permitindo que instâncias desta classe sejam executadas como threads separadas.
+
 public class Camareira extends Thread {
     private int id;  // Identificador único para a camareira.
     private Hotel hotel;  // Referência ao hotel onde a camareira trabalha.
