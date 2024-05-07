@@ -18,7 +18,7 @@ public class Hospede extends Thread {
                 System.out.println("Hóspede " + id + " alocado no quarto " + quarto.getNumero());
                 
                 Random rand = new Random();
-                if (rand.nextInt(2) == 0) {  // 50% chance de sair para passear
+                if (rand.nextInt(2) == 0) {  
                     sairParaPassear();
                 }
 
