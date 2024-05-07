@@ -5,7 +5,7 @@ public class Quarto {
     private int numero;
     private boolean ocupado;
     private boolean emLimpeza;
-    private boolean chaveNaRecepcao; 
+    private boolean chaveNaRecepcao; // Atributo para verificar se a chave está na recepção.
     private List<Hospede> hospedes;
 
     public Quarto(int numero) {
