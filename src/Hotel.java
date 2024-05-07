@@ -5,80 +5,126 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.locks.Condition;
 
-
 public class Hotel {
-    private Quarto[] quartos;  // Array para armazenar os quartos do hotel.
-    private ExecutorService poolHospedes;  // Pool de threads para gerenciar hóspedes.
-    private ExecutorService poolFuncionarios;  // Pool de threads para gerenciar funcionários como camareiras e recepcionistas.
-    private Recepcionista[] recepcionistas;  // Array para armazenar os recepcionistas.
-    private Random rand = new Random();  // Objeto para gerar números aleatórios.
-    private ReentrantLock lock = new ReentrantLock();  // Lock para gerenciar o acesso concorrente.
-    private Condition quartoLiberado = lock.newCondition();  // Condition para sinalizar a liberação de quartos.
+    private Quarto[] quartos;
+    private ExecutorService poolHospedes;
+    private ExecutorService poolFuncionarios;
+    private Recepcionista[] recepcionistas; 
+    private Random rand = new Random();
+    private ReentrantLock lock = new ReentrantLock();
+    private Condition quartoLiberado = lock.newCondition();
 
-    // Construtor da classe Hotel.
     public Hotel(int numQuartos, int numHospedes, int numCamareiras, int numRecepcionistas) {
-        this.quartos = new Quarto[numQuartos];  // Inicializa o array de quartos.
-        recepcionistas = new Recepcionista[numRecepcionistas];  // Inicializa o array de recepcionistas.
+        this.quartos = new Quarto[numQuartos];
+        recepcionistas = new Recepcionista[numRecepcionistas]; 
         for (int i = 0; i < numQuartos; i++) {
-            quartos[i] = new Quarto(i + 1);  // Cria e armazena os quartos.
+            quartos[i] = new Quarto(i + 1);
         }
-        poolHospedes = Executors.newFixedThreadPool(numHospedes);  // Cria um pool de threads para hóspedes.
-        poolFuncionarios = Executors.newFixedThreadPool(numCamareiras + numRecepcionistas);  // Cria um pool de threads para funcionários.
+        poolHospedes = Executors.newFixedThreadPool(numHospedes);
+        poolFuncionarios = Executors.newFixedThreadPool(numCamareiras + numRecepcionistas);
 
         for (int i = 0; i < numHospedes; i++) {
-            poolHospedes.execute(new Hospede(i, this));  // Inicializa e executa as threads dos hóspedes.
+            poolHospedes.execute(new Hospede(i, this));
         }
         for (int i = 0; i < numCamareiras; i++) {
-            poolFuncionarios.execute(new Camareira(i, this));  // Inicializa e executa as threads das camareiras.
+            poolFuncionarios.execute(new Camareira(i, this));
         }
         for (int i = 0; i < numRecepcionistas; i++) {
-            recepcionistas[i] = new Recepcionista(i, this);  // Inicializa e armazena os recepcionistas.
-            poolFuncionarios.execute(recepcionistas[i]);  // Executa as threads dos recepcionistas.
+            recepcionistas[i] = new Recepcionista(i, this);
+            poolFuncionarios.execute(recepcionistas[i]);
         }
     }
 
-    // Método para tentar alocar um quarto para um hóspede.
+    
+    
+
     public boolean alocarQuarto(Hospede hospede) {
-        lock.lock();  // Obtém o lock para operações seguras de thread.
+        lock.lock();
         try {
-            while (true) {  // Loop para tentar alocar um quarto.
+            while (true) {
                 for (Quarto quarto : quartos) {
-                    if (!quarto.estaOcupado() && !quarto.estaEmLimpeza() && !quarto.temChaveNaRecepcao()) {  // Verifica a disponibilidade do quarto.
+                    if (!quarto.estaOcupado() && !quarto.estaEmLimpeza() && !quarto.temChaveNaRecepcao()) {
                         quarto.setOcupado(true);
                         hospede.setQuarto(quarto);
                         return true;
                     }
                 }
-                quartoLiberado.await();  // Espera até que um quarto seja liberado.
+                quartoLiberado.await();
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-        } finally {
-            lock.unlock();  // Libera o lock.
-        }
-        return false;
-    }
-
-    // Método para finalizar a limpeza de um quarto e notificar que está pronto.
-    public void finalizarLimpeza(Quarto quarto) {
-        lock.lock();
-        try {
-            quarto.setEmLimpeza(false);
-            quartoLiberado.signalAll();  // Notifica que o quarto está limpo e pronto para ser ocupado novamente.
-            System.out.println("Quarto " + quarto.getNumero() + " foi limpo e está pronto para ser ocupado novamente.");
+            return false;
         } finally {
             lock.unlock();
         }
     }
 
-    // Método para atender solicitações gerais no hotel.
+    public Recepcionista getRecepcionista() {
+        // Retorna um recepcionista aleatório
+        return recepcionistas[rand.nextInt(recepcionistas.length)];
+    }
+
+    public synchronized void liberarQuarto(Quarto quarto) {
+        lock.lock();
+        try {
+            quarto.setOcupado(false);
+            quarto.setEmLimpeza(false); 
+            quartoLiberado.signalAll(); // Notifica todos os hóspedes que um quarto está disponível
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public Quarto obterQuartoParaLimpeza() {
+        lock.lock();
+        try {
+            for (Quarto quarto : quartos) {
+                if (!quarto.estaOcupado() && !quarto.estaEmLimpeza()) { 
+                    quarto.setEmLimpeza(true); 
+                    return quarto;
+                }
+            }
+            return null;
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    
+    
+    public synchronized void registrarQuartoParaLimpeza(Quarto quarto) {
+        lock.lock();
+        try {
+            if (!quarto.estaOcupado() && quarto.temChaveNaRecepcao()) {
+                quarto.setEmLimpeza(true);
+                quartoLiberado.signalAll();
+            }
+        } finally {
+            lock.unlock();
+        }
+    }
+    public synchronized void finalizarLimpeza(Quarto quarto) {
+        lock.lock();
+        try {
+            quarto.setEmLimpeza(false);
+            quartoLiberado.signalAll(); // Notifica que o quarto está limpo e pronto para ser ocupado novamente
+            System.out.println("Quarto " + quarto.getNumero() + " foi limpo e está pronto para ser ocupado novamente.");
+        } finally {
+            lock.unlock();
+        }
+    }
+    
+   
+
     public void atenderSolicitacoes() {
         lock.lock();
         try {
-            if (rand.nextInt(10) < 1) {  // Apenas 10% de chance de haver uma solicitação cada vez que é verificado.
+            
+            if (rand.nextInt(10) < 1) {  // Apenas 10% de chance de haver uma solicitação cada vez que é verificado
                 System.out.println("Recepcionista está disponível para atender solicitações.");
+               
                 try {
-                    Thread.sleep(500);  // Simula o tempo de atendimento.
+                    Thread.sleep(500); // Simula o tempo de atendimento
                     System.out.println("Recepcionista finalizou uma solicitação.");
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
@@ -89,8 +135,8 @@ public class Hotel {
         }
     }
 
-    // Método para desligar todos os serviços e pools de threads do hotel.
     public void shutdown() {
+        
         poolHospedes.shutdown();
         poolFuncionarios.shutdown();
         try {
@@ -106,9 +152,13 @@ public class Hotel {
             Thread.currentThread().interrupt();
         }
     }
-
-    // Método para iniciar as operações do hotel.
+    
+    
     public void start() {
+    
         System.out.println("Hotel está agora aberto e operando com todos os serviços.");
     }
+
+
+
 }
