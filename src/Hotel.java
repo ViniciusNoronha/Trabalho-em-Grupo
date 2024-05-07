@@ -119,10 +119,10 @@ public class Hotel {
     public void atenderSolicitacoes() {
         lock.lock();
         try {
-            // Simula que o recepcionista verifica se há solicitações pendentes
+            
             if (rand.nextInt(10) < 1) {  // Apenas 10% de chance de haver uma solicitação cada vez que é verificado
                 System.out.println("Recepcionista está disponível para atender solicitações.");
-                // Simula atendimento a uma solicitação.
+               
                 try {
                     Thread.sleep(500); // Simula o tempo de atendimento
                     System.out.println("Recepcionista finalizou uma solicitação.");
